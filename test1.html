@@ -1,0 +1,77 @@
+    function initPaypal(){
+      
+
+        var ppData = $('.js-paypalrest').data();
+
+        if (!w.paypal){
+            w.paypal = 'loading';
+            yepnope.injectJs('https://www.paypalobjects.com/api/checkout.js', function() {
+                initPaypal($paymentForm);
+            });
+            return
+        }
+        if (w.paypal === 'loading'){
+            return
+        }
+        var paypalFunding = {
+            disallowed:[paypal.FUNDING.CARD]
+        }
+        if (ppData.paypal_charge_curr === 'EUR'){
+            paypalFunding.allowed = [
+                paypal.FUNDING.BANCONTACT,
+                paypal.FUNDING.EPS,
+                paypal.FUNDING.GIROPAY,
+                paypal.FUNDING.IDEAL,
+                paypal.FUNDING.MYBANK,
+                paypal.FUNDING.SOFORT
+            ];
+        }
+
+        paypal.Button.render({
+            // Configure environment
+            env: ppData.paypal_env,
+            client: {
+                sandbox: ppData.paypal_id,
+                production: ppData.paypal_id
+            },
+
+            funding: paypalFunding,
+
+            // Customize button (optional)
+            locale: w.paypal_locale,
+            style: {
+                label: 'pay',
+                layout: 'vertical',
+                size:  'responsive',  // small | medium | large | responsive
+                shape: 'rect',       // pill | rect
+                color: 'blue'        // gold | blue | silver | black
+            },
+
+            commit: true,
+
+            // Set up a payment
+            payment: function(resolve, reject) {
+                formModule.submitForm($paymentForm).done(function(data) {
+                    if (data.paypal_token) {
+                        resolve(data.paypal_token);
+                    } else {
+                        reject(new Error('No paypal token'));
+                    }
+
+                }).fail(function() {
+                    reject(new Error('Something went wrong'));
+                });
+            },
+
+            // Execute the payment
+            onAuthorize: function(data, actions) {
+                return actions.redirect()
+            },
+
+            onError:function() {
+
+            }
+        }, '.js-paypalrest');
+    }
+
+    initPaypal();

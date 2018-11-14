@@ -1,0 +1,123 @@
+<html>
+<head>
+
+        <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+
+
+    <script src="https://js.braintreegateway.com/web/3.38.0-beta.2/js/client.min.js"></script>
+
+    <!-- Load the local payment component. -->
+
+    <script src="https://js.braintreegateway.com/web/3.38.0-beta.2/js/local-payment.min.js"></script>
+
+    <style>
+    img {
+        display : block;
+        padding : 15;
+        border-bottom: 1px solid black;
+        cursor: pointer;
+    }</style>
+</head>
+
+    <body>
+<h3> Click on the image to view the experience</h3>
+    <img src="./eps.svg" id="custom-button-eps"></img>
+    <!-- <button id="custom-button-sepa">SEPA</button> -->
+   <img src="./ideal.svg"  id="custom-button-ideal"></img>
+   <img src="./sofort.svg"  id="custom-button-sofort"></img>
+   <img src="./mybank.svg"  id="custom-button-mybank"></img>
+   <img src="./bancontact.svg"  id="custom-button-bancontact"></img>
+
+   <img src="./giropay.svg"  id="custom-button-giropay"></img>
+
+    <script>
+
+    
+    var customButtonEps = document.getElementById('custom-button-eps');
+    // var customButtonSepa = document.getElementById('custom-button-sepa');
+    var customButtonIdeal = document.getElementById('custom-button-ideal');
+    var customButtonSofort = document.getElementById('custom-button-sofort');
+    var customButtonMybank = document.getElementById('custom-button-mybank');
+    var customButtonBancontact = document.getElementById('custom-button-bancontact');
+    var customButtonGiropay = document.getElementById('custom-button-giropay');
+    
+
+    paypal.request.get('/client_token').then(data => {
+        braintree.client.create({
+        "authorization": data 
+        }).then(function (clientInstance) {
+        // Create a local payment component.
+        return braintree.localPayment.create({
+            client: clientInstance
+        });
+        }).then(function (localPaymentInstance) {
+        // Use the localPaymentInstance to start the payment flow
+        
+            function createLocalPaymentClickListener(type) {
+             
+        return function (event) {
+           
+          //  event.preventDefault();
+        
+            localPaymentInstance.startPayment({
+            paymentType: type,
+            amount: '3.00',
+            currencyCode: 'EUR',
+            shippingAddressRequired: false,
+            email : 'apm_test_arvind@test.com',
+            phone: '722194339',
+            givenName: 'Hello',
+            surname: 'World',
+            address: {},
+            
+            onPaymentStart: function (data, start) {
+                // Call start to initiate the popup
+                start();
+            }
+            }).then(function (payload) {
+            // Send the nonce to your server to create a transaction
+                fetch("/ecbt_payment", {
+                    method: 'post',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        amount : '3.00',
+                        nonce : payload.nonce
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log("success ", data);
+                })
+                .catch(function(error) {
+                    console.error(error);
+                });
+        
+        
+            }).catch(function (err) {
+            if (err.code === 'LOCAL_PAYMENT_POPUP_CLOSED') {
+                console.log('Customer closed Local Payment popup.');
+                alert("popup closed by customer")
+            } else {
+                console.log('Error!', err);
+                alert("error")
+            }
+            });
+        };
+        }
+        customButtonEps.addEventListener('click', createLocalPaymentClickListener('eps'));
+//        customButtonSepa.addEventListener('click', createLocalPaymentClickListener('sepa'));
+        customButtonIdeal.addEventListener('click', createLocalPaymentClickListener('ideal'));
+        customButtonMybank.addEventListener('click', createLocalPaymentClickListener('mybank'));
+        customButtonSofort.addEventListener('click', createLocalPaymentClickListener('sofort'));
+        customButtonBancontact.addEventListener('click', createLocalPaymentClickListener('bancontact'));
+        customButtonGiropay.addEventListener('click', createLocalPaymentClickListener('giropay'));
+        });         
+    });   
+    </script>
+
+    </body>
+
+    </html>
