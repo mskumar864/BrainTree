@@ -34,7 +34,7 @@ paypal.request.get('/client_token').then(data => {
                         return paypal.Button.render(
                             {
                                 env: "production",
-                                locale: "de_AT",
+                                //locale: "de_AT",
                                 commit : true,
                                 style: {
                                     layout: "vertical", // horizontal | vertical
@@ -43,7 +43,7 @@ paypal.request.get('/client_token').then(data => {
                                     color: 'gold' // gold | blue | silver | black
                                 },
                                 funding: {
-                                    allowed: ["eps",'sofort','elv','ideal','mybank']
+                                    allowed: ["eps",'sofort','elv','ideal','mybank','giropay']
                                 },
                                 payment: function() {
                                     return paypalCheckoutInstance.createPayment({
