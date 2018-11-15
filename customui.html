@@ -22,7 +22,8 @@
 <h3> Click on the image to view the experience</h3>
 
     <img src="./eps.svg" id="custom-button-eps"></img>
-    <!-- <button id="custom-button-sepa">SEPA</button> -->
+
+    <img src="./elv.svg" id="custom-button-sepa"></img>
    <img src="./ideal.svg"  id="custom-button-ideal"></img>
    <img src="./sofort.svg"  id="custom-button-sofort"></img>
    <img src="./mybank.svg"  id="custom-button-mybank"></img>
@@ -34,7 +35,7 @@
 
     
     var customButtonEps = document.getElementById('custom-button-eps');
-    // var customButtonSepa = document.getElementById('custom-button-sepa');
+    var customButtonSepa = document.getElementById('custom-button-sepa');
     var customButtonIdeal = document.getElementById('custom-button-ideal');
     var customButtonSofort = document.getElementById('custom-button-sofort');
     var customButtonMybank = document.getElementById('custom-button-mybank');
@@ -110,7 +111,7 @@
         };
         }
         customButtonEps.addEventListener('click', createLocalPaymentClickListener('eps'));
-//        customButtonSepa.addEventListener('click', createLocalPaymentClickListener('sepa'));
+       customButtonSepa.addEventListener('click', createLocalPaymentClickListener('sepa'));
         customButtonIdeal.addEventListener('click', createLocalPaymentClickListener('ideal'));
         customButtonMybank.addEventListener('click', createLocalPaymentClickListener('mybank'));
         customButtonSofort.addEventListener('click', createLocalPaymentClickListener('sofort'));
