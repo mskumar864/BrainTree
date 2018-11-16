@@ -8,119 +8,150 @@
     <!-- Load the local payment component. -->
 
     <script src="https://js.braintreegateway.com/web/3.38.0-beta.2/js/local-payment.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
 
     <style>
     img {
-        display : block;
+     
         padding: 10px;
-        border-bottom: 1px solid black;
         cursor: pointer;
     }</style>
 </head>
 
     <body>
-<h3> Click on the image to view the experience</h3>
+        <div class="container">
+            <h3 style="text-align: center">APM Live Testing using TH account </h3>
+            <h5 style="text-align: center"> Click on the image to view the experience</h5>
+            <br/><Br/>
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3"> 
+               Country
+                    <select id="sepaCC" >
+                        <option value="AT">AT</option>
+                        <option value="DE">DE</option>
+                    </select>    
 
-    <img src="./eps.svg" id="custom-button-eps"></img>
-
-    <img src="./elv.svg" id="custom-button-sepa"></img>
-   <img src="./ideal.svg"  id="custom-button-ideal"></img>
-   <img src="./sofort.svg"  id="custom-button-sofort"></img>
-   <img src="./mybank.svg"  id="custom-button-mybank"></img>
-   <img src="./bancontact.svg"  id="custom-button-bancontact"></img>
-
-   <img src="./giropay.svg"  id="custom-button-giropay"></img>
-
-    <script>
-
-    
-    var customButtonEps = document.getElementById('custom-button-eps');
-    var customButtonSepa = document.getElementById('custom-button-sepa');
-    var customButtonIdeal = document.getElementById('custom-button-ideal');
-    var customButtonSofort = document.getElementById('custom-button-sofort');
-    var customButtonMybank = document.getElementById('custom-button-mybank');
-    var customButtonBancontact = document.getElementById('custom-button-bancontact');
-    var customButtonGiropay = document.getElementById('custom-button-giropay');
-    
-
-
-    paypal.request.get('/client_token').then(data => {
-        braintree.client.create({
-        "authorization": data 
-        }).then(function (clientInstance) {
-        // Create a local payment component.
-        return braintree.localPayment.create({
-            client: clientInstance
-        });
-        }).then(function (localPaymentInstance) {
-        // Use the localPaymentInstance to start the payment flow
-        
-            function createLocalPaymentClickListener(type) {
-             
-        return function (event) {
-           
-          //  event.preventDefault();
-        
-            localPaymentInstance.startPayment({
-                paymentType: type,
-                amount: '1.00',
-                currencyCode: 'EUR',
-                shippingAddressRequired: false,
-                email : 'testapm@test.com',
-                //phone: '722194339',
-                givenName: 'Hello',
-                surname: 'World',
+                    <img src="./elv.svg" style=" border-right: 1px solid black;"id="custom-button-sepa"></img>
                
-                onPaymentStart: function (data, start) {
-                    // Call start to initiate the popup
-                    start();
-                }
-            }).then(function (payload) {
-            // Send the nonce to your server to create a transaction
-                fetch("/ecbt_payment", {
-                    method: 'post',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        amount : '1.00',
-                        nonce : payload.nonce
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    console.log("success ", data);
-                    alert("Payment Done");
-                })
-                .catch(function(error) {
-                    console.error(error);
-                    alert("Some Error occurred");
-                });
-        
-        
-            }).catch(function (err) {
-            if (err.code === 'LOCAL_PAYMENT_POPUP_CLOSED') {
-                console.log('Customer closed Local Payment popup.');
-                alert("popup closed by user")
-            } else {
-                console.log('Error!', err);
-                alert("error"+ JSON.stringify(err))
-            }
-            });
-        };
-        }
-        customButtonEps.addEventListener('click', createLocalPaymentClickListener('eps'));
-       customButtonSepa.addEventListener('click', createLocalPaymentClickListener('sepa'));
-        customButtonIdeal.addEventListener('click', createLocalPaymentClickListener('ideal'));
-        customButtonMybank.addEventListener('click', createLocalPaymentClickListener('mybank'));
-        customButtonSofort.addEventListener('click', createLocalPaymentClickListener('sofort'));
-        customButtonBancontact.addEventListener('click', createLocalPaymentClickListener('bancontact'));
-        customButtonGiropay.addEventListener('click', createLocalPaymentClickListener('giropay'));
-        });         
-    });   
-    </script>
+                    <img src="./ideal.svg"  id="custom-button-ideal" style="margin-left:20px"></img>
+                </div>
+            </div>
+        </div>        
+      
 
+    <!-- <img src="./eps.svg" id="custom-button-eps"></img>
+        <img src="./sofort.svg"  id="custom-button-sofort"></img>
+        <img src="./mybank.svg"  id="custom-button-mybank"></img>
+        <img src="./bancontact.svg"  id="custom-button-bancontact"></img>
+        <img src="./giropay.svg"  id="custom-button-giropay"></img>
+    -->
+        <script>
+        
+        var customButtonSepa = document.getElementById('custom-button-sepa');
+        var customButtonIdeal = document.getElementById('custom-button-ideal');
+    
+    /* 
+        var customButtonEps = document.getElementById('custom-button-eps');
+        var customButtonSofort = document.getElementById('custom-button-sofort');
+        var customButtonMybank = document.getElementById('custom-button-mybank');
+        var customButtonBancontact = document.getElementById('custom-button-bancontact');
+        var customButtonGiropay = document.getElementById('custom-button-giropay');
+        */
+
+
+        paypal.request.get('/client_token').then(data => {
+            braintree.client.create({
+            "authorization": data 
+            }).then(function (clientInstance) {
+            // Create a local payment component.
+            return braintree.localPayment.create({
+                client: clientInstance
+            });
+            }).then(function (localPaymentInstance) {
+            // Use the localPaymentInstance to start the payment flow
+            
+                function createLocalPaymentClickListener(type) {
+                
+            return function (event) {
+            
+            //  event.preventDefault();
+            
+
+                var countryCode= '';
+                if(type == 'ideal') {
+                    countryCode = 'NL';
+                } else {
+                    countryCode = document.getElementById("sepaCC").value;
+                }
+
+                localPaymentInstance.startPayment({
+                
+                    paymentType: type,
+                    amount: '1.00',
+                    currencyCode: 'EUR',
+                    shippingAddressRequired: false,
+                    email : 'testapm@test.com',
+                    //phone: '722194339',
+                    givenName: 'Hello',
+                    surname: 'World',
+                    address : {
+                        countryCode : countryCode
+                    },
+                    onPaymentStart: function (data, start) {
+                        // Call start to initiate the popup
+                        start();
+                    }
+                }).then(function (payload) {
+                // Send the nonce to your server to create a transaction
+                    fetch("/ecbt_payment", {
+                        method: 'post',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            amount : '1.00',
+                            nonce : payload.nonce
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log("success ", data);
+                        alert("Payment Done");
+                    })
+                    .catch(function(error) {
+                        console.error(error);
+                        alert("Some Error occurred");
+                    });
+            
+            
+                }).catch(function (err) {
+                if (err.code === 'LOCAL_PAYMENT_POPUP_CLOSED') {
+                    console.log('Customer closed Local Payment popup.');
+                    alert("popup closed by user")
+                } else {
+                    console.log('Error!', err);
+                    alert("error"+ JSON.stringify(err))
+                }
+                });
+            };
+            }
+            
+            customButtonSepa.addEventListener('click', createLocalPaymentClickListener('sepa'));
+            customButtonIdeal.addEventListener('click', createLocalPaymentClickListener('ideal'));
+    
+            /*
+                customButtonEps.addEventListener('click', createLocalPaymentClickListener('eps'));
+                customButtonMybank.addEventListener('click', createLocalPaymentClickListener('mybank'));
+                customButtonSofort.addEventListener('click', createLocalPaymentClickListener('sofort'));
+                customButtonBancontact.addEventListener('click', createLocalPaymentClickListener('bancontact'));
+                customButtonGiropay.addEventListener('click', createLocalPaymentClickListener('giropay'));
+            */    
+        });         
+        });   
+        </script>
+   
     </body>
 
     </html>
