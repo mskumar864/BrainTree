@@ -29,12 +29,14 @@ app.get("/client_token", function (req, res) {
 });
 
 app.post("/checkout", function (req, res) {
+
+  console.log("final call -----------------------------")
     var gateway = braintree.connect({
         environment: braintree.Environment.Production,
     //    accessToken: "access_token$sandbox$55g8cq9ftqx5ysq5$1082e02169772c9637782fbd470d2aaa"
         accessToken : "access_token$production$96vrdvzcgbzj475g$012a9b891176afc4ea1aeba77bf53d93"
     });
-   
+      console.log('nonce from the client ----------',nonceFromTheClient);
       // Use the payment method nonce here
       var nonceFromTheClient = req.body.nonce;
       console.log(nonceFromTheClient)

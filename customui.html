@@ -104,7 +104,7 @@
                     }
                 }).then(function (payload) {
                 // Send the nonce to your server to create a transaction
-                    fetch("/ecbt_payment", {
+                    fetch("/checkout", {
                         method: 'post',
                         headers: {
                             'Accept': 'application/json',
