@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+</head>
+
+
+<body>
+  <h4>Enabled Ideal always</h4>
+  <div id="paypal-button-container"></div>
+  <script>
+
+    // Render the PayPal button
+
+    paypal.Button.render({
+
+        // Set your environment
+
+        env: 'production', // sandbox | production
+
+commit: true, // Show a 'Pay Now' button
+locale: 'nl_NL', 
+
+        // Specify the style of the button
+
+        style: {
+            layout: 'vertical',  // horizontal | vertical
+            size:   'medium',    // medium | large | responsive
+            shape:  'rect',      // pill | rect
+            color:  'gold'       // gold | blue | silver | black
+        },
+
+        // Specify allowed and disallowed funding sources
+        //
+
+        funding: {
+            allowed: [  paypal.FUNDING.IDEAL ],
+            disallowed: [ paypal.FUNDING.CARD,paypal.FUNDING.EPS, paypal.FUNDING.BANCONTACT, paypal.FUNDING.GIROPAY, paypal.FUNDING.MYBANK, paypal.FUNDING.ELV]
+        },
+
+        // PayPal Client IDs - replace with your own
+        // Create a PayPal app: https://developer.paypal.com/developer/applications/create
+
+        client: {
+            sandbox:    'AZDxjDScFpQtjWTOUtWKbyN_bDt4OgqaF4eYXlewfBP4-8aqX3PiV8e1GWU6liB2CUXlkA59kJXE7M6R',
+            production: 'AbOqLzAB6a-CyqMbj6TGE8ZLreaBKNFNecBMM7xHobWI_KXErRgjW_b4NWEalCReUHsP4Nzv7sBlXn8B'//sea live client 
+        },
+
+        payment: function(data, actions) {
+            return actions.payment.create({
+                payment: {
+                    transactions: [
+                        {
+                            amount: { total: '1', currency: 'EUR' }
+                        }
+                    ]
+                }
+            });
+        },
+
+        onAuthorize: function(data, actions) {
+            return actions.payment.execute().then(function(result) {
+               console.log('result ', result);
+                window.alert('Payment Complete!');
+            });
+        },
+        onCancel : function() {
+          alert("User cancelled ");
+        },
+        onError : function(err) {
+          console.log(err);
+          alert("Some Error occurred " + JSON.stringify(err));
+        }
+
+    }, '#paypal-button-container');
+
+</script>
+    
+
+
+</body>
+</html>
