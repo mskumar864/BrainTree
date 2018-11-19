@@ -8,7 +8,7 @@
 
 
 <body>
-  <h4>iDEAL Payment</h4>
+  <h4>iDEAL shown for Netherland and SEPA Payment shown for Austria and Germany</h4>
   <div id="paypal-button-container"></div>
   <script>
 
@@ -21,7 +21,7 @@
         env: 'production', // sandbox | production
 
 commit: true, // Show a 'Pay Now' button
-locale: 'nl_NL', 
+//locale: 'nl_NL', 
 
         // Specify the style of the button
 
@@ -36,8 +36,8 @@ locale: 'nl_NL',
         //
 
         funding: {
-            allowed: [  paypal.FUNDING.IDEAL ],
-            disallowed: [ paypal.FUNDING.CARD,paypal.FUNDING.EPS, paypal.FUNDING.BANCONTACT, paypal.FUNDING.GIROPAY, paypal.FUNDING.MYBANK, paypal.FUNDING.ELV]
+            allowed: [  paypal.FUNDING.IDEAL,paypal.FUNDING.ELV ],
+            disallowed: [ paypal.FUNDING.CARD,paypal.FUNDING.EPS, paypal.FUNDING.BANCONTACT, paypal.FUNDING.GIROPAY, paypal.FUNDING.MYBANK]
         },
 
         // PayPal Client IDs - replace with your own
