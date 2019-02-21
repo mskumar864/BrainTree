@@ -1,0 +1,112 @@
+<html>
+<head>
+    <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+
+    <script src="https://js.braintreegateway.com/web/3.38.0-beta.2/js/client.min.js"></script>
+
+    <script src="https://js.braintreegateway.com/web/3.38.0-beta.2/js/paypal-checkout.js"></script>
+
+</head>
+
+<body>
+
+<div id="paypal-button-container"></div>
+
+<script>
+
+paypal.request.get('/client_token_sb').then(data => {
+    braintree.client.create({
+    "authorization": data
+},function (clientErr, clientInstance) {
+                    if (clientErr) {
+                          throw clientErr;
+                    }
+
+                    braintree.paypalCheckout.create({
+                        client: clientInstance
+                    }, function (paypalCheckoutErr, paypalCheckoutInstance) {
+                    
+                        if (paypalCheckoutErr) {
+                            console.error('Error creating PayPal Checkout:', paypalCheckoutErr);
+                            return;
+                        }
+
+                        return paypal.Button.render(
+                            {
+                                env: "sandbox",
+                                //locale: "de_AT",
+                                commit : true,
+                                style: {
+                                    layout: "vertical", // horizontal | vertical
+                                    size: 'medium', // medium | large | responsive
+                                    shape: 'rect', // pill | rect
+                                    color: 'gold' // gold | blue | silver | black
+                                },
+                                funding: {
+                                    allowed: ["eps",'sofort','elv','ideal','mybank','giropay']
+                                },
+                                payment: function() {
+                                    return paypalCheckoutInstance.createPayment({
+                                        flow: "checkout",
+                                        intent: "sale",
+                                        amount: "1.00",
+                                        currency: "USD",
+                                        enableShippingAddress: false,
+                                        shippingAddressEditable: false
+                                       
+                                    });
+                                },
+
+                                onAuthorize: function (data, actions) {
+                                    return paypalCheckoutInstance.tokenizePayment(data,function(err, payload) {
+                                        if(err) {
+                                            console.error(err);
+                                            return;
+                                        }
+
+                                        console.debug("Noncing payload: ", payload);
+                                        fetch("/checkout_sb", {
+                                            method: 'post',
+                                            headers: {
+                                                'Accept': 'application/json',
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({
+                                                amount : '1.00',
+                                                nonce : payload.nonce
+                                            })
+                                        })
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            console.log("success ", data);
+                                            alert("Payment Done")
+                                        })
+                                        .catch(function(error) {
+                                            console.error(error);
+                                            alert("Error")
+                                        });
+                                    });
+                                },
+
+                                onCancel: function (data) {
+                                    console.log('Buyer canceled payment');
+                                    alert("Buyer cancelled payment")
+                                },
+
+                                onError: function(err) {
+                                    console.error(err);
+                                    alert("Some error")
+                                }
+                        },
+                            '#paypal-button-container'
+                        );
+                    })
+                });
+                  
+})
+    
+</script>
+
+</body>
+
+</html>

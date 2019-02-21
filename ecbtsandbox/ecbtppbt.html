@@ -1,0 +1,122 @@
+
+<html>
+  <head>
+      
+  
+
+<!-- Load the required checkout.js script -->
+<script src="https://www.paypalobjects.com/api/checkout.js" data-version-4></script>
+
+<!-- Load the required Braintree components. -->
+<script src="https://js.braintreegateway.com/web/3.42.0/js/client.min.js"></script>
+<script src="https://js.braintreegateway.com/web/3.42.0/js/paypal-checkout.min.js"></script>
+
+  
+     
+  </head>
+  <body>
+      <div id="paypal-button"></div>
+<script>
+ paypal.Button.render({
+  braintree: braintree,
+  client: {
+    production: 'CLIENT_TOKEN_FROM_SERVER',
+    sandbox: paypal.request.get('/client_token_sb'),
+  },
+  env: 'sandbox', // Or 'sandbox'
+  commit: true, // This will add the transaction amount to the PayPal button
+    intent:'sale',
+  //intent:'auth',
+ // intent:'order',
+      style: {
+        layout: 'vertical', // Required for local payment methods
+        size: 'medium', // Must be at least medium for vertical layout
+      },
+     // locale:'de_DE',
+      funding: {
+        allowed: [
+          paypal.FUNDING.BANCONTACT,
+          paypal.FUNDING.EPS,
+          paypal.FUNDING.GIROPAY,
+          paypal.FUNDING.IDEAL,
+          paypal.FUNDING.MYBANK,
+          paypal.FUNDING.ELV,
+          paypal.FUNDING.SOFORT,
+          paypal.FUNDING.CARD
+        ],
+        disallowed: [
+       
+          paypal.FUNDING.CREDIT
+        ]},
+//create payment payload
+//https://braintree.github.io/braintree-web/3.34.0//PayPalCheckout.html#createPayment
+  payment: function (data, actions) {
+    return actions.braintree.create({
+      
+
+      flow: 'checkout', // Required
+      amount: 10.00, // Required
+      currency: 'USD', // Required
+      lineItems : [
+       {
+      "quantity": "1",
+      "unitAmount":"10.00",
+      "name":"some field",
+       "kind": "debit"
+      }
+    ],
+   
+      enableShippingAddress: true,
+      shippingAddressEditable: true,
+   shippingAddressOverride: {
+        recipientName: 'Scruff McGruff',
+        line1: '1234 Main St.',
+        line2: 'Unit 1',
+        city: 'Chicago',
+        countryCode: 'US',
+        postalCode: '60652',
+        state: 'IL',
+        phone:"5417543010"
+      },
+      landingPageType:"login",
+      displayName : "BT test Suresh"
+
+   
+    });
+  },
+
+  onAuthorize: function (payload,actions) {
+    // Submit `payload.nonce` to your server.
+    console.log("Noncing payload: ", payload);
+        return actions.payment.tokenize()
+               .then(function (payload) {      // Submit `payload.nonce` to your server.
+                console.log("after toen ", payload);
+                                        fetch("/checkout_sb", {
+                                            method: 'post',
+                                            headers: {
+                                                'Accept': 'application/json',
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({
+                                                amount : '10.00',
+                                                nonce : payload.nonce
+                                            })
+                                        })
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            console.log("success ", data);
+                                            alert("Payment Done")
+                                        })
+                                        .catch(function(error) {
+                                            console.error(error);
+                                            alert("Error")
+                                        });
+
+  });
+
+  },
+}, '#paypal-button');
+</script>
+
+</body>
+</html>

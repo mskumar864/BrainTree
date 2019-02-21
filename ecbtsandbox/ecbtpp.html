@@ -1,0 +1,67 @@
+// This does not support line items only shipping address and applicaiton can be possible
+//https://developer.paypal.com/docs/archive/checkout/how-to/braintree-integration/#1-set-up-your-client
+
+<div id="paypal-button"></div>
+
+<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+
+<script src="https://js.braintreegateway.com/web/3.38.0-beta.2/js/client.min.js"></script>
+
+<script src="https://js.braintreegateway.com/web/3.38.0-beta.2/js/paypal-checkout.js"></script>
+
+
+<script>
+  paypal.Button.render({
+    braintree: braintree,
+    // Add your credentials:
+    // 1. Call your server to generate Braintree client tokens for each env
+    client: {
+      sandbox:    paypal.request.get('/client_token_sb'),
+  
+    },
+    env: 'sandbox', // or 'sandbox'
+    // Set up the payment:
+    // 1. Add a payment callback
+    payment: function (data, actions) {
+      // 2. Call actions.payment.create
+      return actions.payment.create({
+        payment: {
+          transactions: [{
+            amount: {
+              total: '1.00',
+              currency: 'USD'
+            },
+          item_list: { 
+              items: [
+                    { name: "vada", description : "vadadescription", quantity: '1', price: "1.00", currency: "USD" } 
+                ] 
+            } 
+        }]
+    } 
+      });
+    },
+    // Execute the payment:
+    // 1. Add an onAuthorize callback
+    onAuthorize: function (data, actions) {
+      // 2. Call Braintree to tokenize the payment
+      return actions.payment.tokenize()
+        .then(function (data) {
+          // 3. Call your server to execute the payment
+          return paypal.request.post('/checkout_sb', {
+            nonce: data.nonce
+           
+          }).then(function(result) {
+               console.log('result ', result);
+                window.alert('Payment Complete!');
+            });;
+        });
+    },
+    onCancel : function() {
+          alert("User cancelled ");
+        },
+ onError : function(err) {
+          console.log(err);
+          alert("Some Error occurred " + JSON.stringify(err));
+        }
+  }, '#paypal-button');
+</script>
