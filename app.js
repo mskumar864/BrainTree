@@ -91,9 +91,8 @@ app.post("/checkout", function (req, res) {
       });
         //console.log('nonce from the client ----------',nonceFromTheClient);
         // Use the payment method nonce here
-
-        console.log("req.body"+JSON.stringify(req.body));
-        var nonceFromTheClient = (JSON.stringify(req.body)).payment_method_nonce;
+        
+        var nonceFromTheClient = req.body.nonce;
         console.log("nonceFromTheClient"+nonceFromTheClient)
       //  console.log(req.body.amount.total);
         // Create a new transaction for $10
