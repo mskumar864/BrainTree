@@ -72,7 +72,7 @@ app.post("/checkout", function (req, res) {
     
     var gateway = braintree.connect({
       environment: braintree.Environment.Sandbox,
-        accessToken: "access_token$sandbox$cmsjrxqjrjzbcz2r$3ea9b37593fb87eccaa70d92ddf6babf"
+        accessToken: "access_token$sandbox$b5zgv8vvwrpwrjwb$2bfadcedb29c10b948e4fbcdf7cbb210"
       //accessToken : "access_token$production$96vrdvzcgbzj475g$012a9b891176afc4ea1aeba77bf53d93"
   });
   
@@ -87,7 +87,7 @@ app.post("/checkout", function (req, res) {
       var gateway = braintree.connect({
           environment: braintree.Environment.Sandbox,
       //    accessToken: "access_token$sandbox$55g8cq9ftqx5ysq5$1082e02169772c9637782fbd470d2aaa"
-          accessToken : "access_token$sandbox$cmsjrxqjrjzbcz2r$3ea9b37593fb87eccaa70d92ddf6babf"
+          accessToken : "access_token$sandbox$b5zgv8vvwrpwrjwb$2bfadcedb29c10b948e4fbcdf7cbb210"
       });
         //console.log('nonce from the client ----------',nonceFromTheClient);
         // Use the payment method nonce here
@@ -100,12 +100,13 @@ app.post("/checkout", function (req, res) {
           amount: '10.00',
           paymentMethodNonce: nonceFromTheClient,
           merchantAccountId: "USD",
+          orderId:"123123123121123",
           options: {
             // This option requests the funds from the transaction
             // once it has been authorized successfully
             submitForSettlement: true,
             paypal: {
-              payeeEmail: "usms1@test.com",
+           //   payeeEmail: "usms1@test.com",
               supplementaryData: {
                 sender_account_id: 'xyz123',
                 sender_first_name:"us",
@@ -121,6 +122,7 @@ app.post("/checkout", function (req, res) {
         }, function(error, result) {
             if (result) {
               res.send(result);
+              console.log(result)
             } else {
               res.status(500).send(error);
             }
@@ -373,6 +375,55 @@ app.post("/checkout", function (req, res) {
             console.log(result && result.errors);
             res.json(result && result.errors)
           }
+        });
+      });
+
+      app.get("/:id", function(req, res){
+        console.log('client_token');
+    
+    var gateway = braintree.connect({
+      environment: braintree.Environment.Sandbox,
+        accessToken: "access_token$sandbox$b5zgv8vvwrpwrjwb$2bfadcedb29c10b948e4fbcdf7cbb210"
+      //accessToken : "access_token$production$96vrdvzcgbzj475g$012a9b891176afc4ea1aeba77bf53d93"
+  });
+  
+    gateway.clientToken.generate({}, function (err, response) {
+     // res.send(response.clientToken);
+    });
+        console.log("get payment information: "+req.params.id);
+        gateway.transaction.find(req.params.id, function (err, result) {
+          if (err) {
+            console.log('error');
+            res.status(500);
+            res.send(err);
+          } else  {
+            console.log('success '+ req.params.id);
+            console.log(result);
+            res.send(result);
+        } 
+        });
+      });
+      
+      app.get("/order/:id", function(req, res){
+        console.log("get order information: "+req.params.id);
+        console.log('client_token');
+    
+        var gateway = braintree.connect({
+          environment: braintree.Environment.Sandbox,
+            accessToken: "access_token$sandbox$b5zgv8vvwrpwrjwb$2bfadcedb29c10b948e4fbcdf7cbb210"
+          //accessToken : "access_token$production$96vrdvzcgbzj475g$012a9b891176afc4ea1aeba77bf53d93"
+      });
+      
+        gateway.clientToken.generate({}, function (err, response) {
+         // res.send(response.clientToken);
+        });
+        var stream = gateway.transaction.search(function (search) {
+          search.orderId().is(req.params.id);
+        }, function (err, response) {
+          response.each(function (err, result) {
+            console.log(result);
+            res.send(result);
+          });
         });
       });
 
