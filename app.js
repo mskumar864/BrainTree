@@ -121,8 +121,12 @@ app.post("/checkout", function (req, res) {
           }
         }, function(error, result) {
             if (result) {
-              res.send(result);
               console.log(result)
+           //   res.send(result.transaction.id);
+              res.send("Capture id "+result.transaction.paypal.captureId);
+            
+
+
             } else {
               res.status(500).send(error);
             }
