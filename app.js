@@ -100,12 +100,12 @@ app.post("/checkout", function (req, res) {
           amount: '10.00',
           paymentMethodNonce: nonceFromTheClient,
           merchantAccountId: "USD",
-          orderId:"123123123121123",
+        orderId:"Sure"+Math.random()*1000,
           options: {
             // This option requests the funds from the transaction
             // once it has been authorized successfully
             submitForSettlement: true,
-            paypal: {
+           /* paypal: {
            //   payeeEmail: "usms1@test.com",
               supplementaryData: {
                 sender_account_id: 'xyz123',
@@ -117,7 +117,7 @@ app.post("/checkout", function (req, res) {
                 
               
                 },
-            }
+            }*/
           }
         }, function(error, result) {
             if (result) {

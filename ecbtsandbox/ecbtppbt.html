@@ -25,7 +25,7 @@
   },
   env: 'sandbox', // Or 'sandbox'
   commit: true, // This will add the transaction amount to the PayPal button
-    intent:'sale',
+  
   //intent:'auth',
  // intent:'order',
       style: {
@@ -53,7 +53,7 @@
   payment: function (data, actions) {
     return actions.braintree.create({
       
-
+      intent: 'sale',
       flow: 'checkout', // Required
       amount: 10.00, // Required
       currency: 'USD', // Required

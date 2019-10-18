@@ -52,8 +52,8 @@ paypal.request.get('/client_token').then(data => {
                                         amount: "1.00",
                                         currency: "EUR",
                                         enableShippingAddress: false,
-                                        shippingAddressEditable: false
-                                       
+                                        shippingAddressEditable: false,
+                                        landingPageType:"billing"
                                     });
                                 },
 
